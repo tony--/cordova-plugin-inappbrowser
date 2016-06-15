@@ -16,9 +16,10 @@
        specific language governing permissions and limitations
        under the License.
 */
-package org.apache.cordova.inappbrowser;
+package com.intel.xdk.inappbrowserplus;
 
 import android.annotation.SuppressLint;
+import com.intel.xdk.inappbrowserplus.InAppBrowserDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Browser;
@@ -214,6 +215,12 @@ public class InAppBrowser extends CordovaPlugin {
             } else {
                 jsWrapper = "(function(d) { var c = d.createElement('script'); c.src = %s; d.body.appendChild(c); })(document)";
             }
+            injectDeferredObject(args.getString(0), jsWrapper);
+        }
+		//workaround for HTML-7741
+        else if (action.equals("injectScriptCodeWithConditionalCallback")) {
+            String jsWrapper = null;
+            jsWrapper = String.format("(function a(){ setTimeout(function(){ if(%s) { prompt(JSON.stringify([eval(%%s)]), 'gap-iab://%s') } else { a(); } }, 1000); })();", args.getString(1), callbackContext.getCallbackId());
             injectDeferredObject(args.getString(0), jsWrapper);
         }
         else if (action.equals("injectStyleCode")) {

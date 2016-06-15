@@ -47,10 +47,10 @@
             }
         },
         close: function (eventname) {
-            exec(null, null, "InAppBrowser", "close", []);
+          exec(null, null, "InAppBrowserPlus", "close", []);
         },
         show: function (eventname) {
-          exec(null, null, "InAppBrowser", "show", []);
+          exec(null, null, "InAppBrowserPlus", "show", []);
         },
         addEventListener: function (eventname,f) {
             if (eventname in this.channels) {
@@ -65,19 +65,28 @@
 
         executeScript: function(injectDetails, cb) {
             if (injectDetails.code) {
-                exec(cb, null, "InAppBrowser", "injectScriptCode", [injectDetails.code, !!cb]);
+                exec(cb, null, "InAppBrowserPlus", "injectScriptCode", [injectDetails.code, !!cb]);
             } else if (injectDetails.file) {
-                exec(cb, null, "InAppBrowser", "injectScriptFile", [injectDetails.file, !!cb]);
+                exec(cb, null, "InAppBrowserPlus", "injectScriptFile", [injectDetails.file, !!cb]);
             } else {
                 throw new Error('executeScript requires exactly one of code or file to be specified');
+            }
+        },
+    
+        //workaround for HTML-7741
+        executeScriptWithConditionalCallback: function(injectDetails, cb, cbCondition) {
+            if (injectDetails.code) {
+                exec(cb, null, "InAppBrowserPlus", "injectScriptCodeWithConditionalCallback", [injectDetails.code, cbCondition]);
+            } else {
+                throw new Error('executeScriptWithConditionalCallback requires code to be specified');
             }
         },
 
         insertCSS: function(injectDetails, cb) {
             if (injectDetails.code) {
-                exec(cb, null, "InAppBrowser", "injectStyleCode", [injectDetails.code, !!cb]);
+                exec(cb, null, "InAppBrowserPlus", "injectStyleCode", [injectDetails.code, !!cb]);
             } else if (injectDetails.file) {
-                exec(cb, null, "InAppBrowser", "injectStyleFile", [injectDetails.file, !!cb]);
+                exec(cb, null, "InAppBrowserPlus", "injectStyleFile", [injectDetails.file, !!cb]);
             } else {
                 throw new Error('insertCSS requires exactly one of code or file to be specified');
             }
@@ -105,7 +114,7 @@
 
         strWindowFeatures = strWindowFeatures || "";
 
-        exec(cb, cb, "InAppBrowser", "open", [strUrl, strWindowName, strWindowFeatures]);
+        exec(cb, cb, "InAppBrowserPlus", "open", [strUrl, strWindowName, strWindowFeatures]);
         return iab;
     };
 })();
